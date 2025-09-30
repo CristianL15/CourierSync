@@ -42,6 +42,17 @@ public class VehicleService {
     return vehicleRepository.findAll().stream().map(vehicleMapper::toDTO).toList();
   }
 
+  public VehicleDTO update(Long id, VehicleDTO dto) {
+    if (dto == null)
+      throw new BadRequestException("VehicleDTO must not be null");
+    vehicleRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
+    Vehicle toSave = vehicleMapper.toEntity(dto);
+    toSave.setId(id);
+    Vehicle saved = vehicleRepository.save(toSave);
+    return vehicleMapper.toDTO(saved);
+  }
+
   public void deleteById(Long id) {
     if (!vehicleRepository.existsById(id)) {
       throw new ResourceNotFoundException("Vehicle not found with id: " + id);
